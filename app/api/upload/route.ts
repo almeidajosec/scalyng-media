@@ -37,7 +37,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ client: clientSlug, uploaded, errors });
+  // If ALL uploads failed, return 500 so the client shows a real error
+  // instead of a silent success.
+  const status = uploaded.length === 0 && errors.length > 0 ? 500 : 200;
+  return NextResponse.json({ client: clientSlug, uploaded, errors }, { status });
 }
 
 export const dynamic = "force-dynamic";
