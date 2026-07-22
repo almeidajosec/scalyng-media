@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { isAuthenticated } from "@/lib/session";
 import { uploadToBlob } from "@/lib/blob";
 import { slugify } from "@/lib/utils";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   const form = await req.formData();
   const clientRaw = form.get("client");
