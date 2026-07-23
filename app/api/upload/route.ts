@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
       uploaded.push({ name: file.name, url: res.url });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
+      // Log so it shows up in Vercel runtime logs, not just the JSON body.
+      console.error(`[upload] ${clientSlug}/${file.name} failed:`, e);
       errors.push({ name: file.name, error: msg });
     }
   }

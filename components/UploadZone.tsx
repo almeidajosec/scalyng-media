@@ -36,7 +36,10 @@ export function UploadZone({ clientSlug }: { clientSlug: string }) {
               fd.append("files", file);
               const res = await fetch("/api/upload", { method: "POST", body: fd });
               const data = await res.json();
-              if (!res.ok) throw new Error(data.error || "upload_failed");
+              if (!res.ok) {
+                const msg = data.errors?.[0]?.error || data.error || `HTTP ${res.status}`;
+                throw new Error(msg);
+              }
               const url = data.uploaded?.[0]?.url as string | undefined;
               setItems((prev) =>
                 prev.map((it) => (it.file === file ? { ...it, state: "done", url } : it))
